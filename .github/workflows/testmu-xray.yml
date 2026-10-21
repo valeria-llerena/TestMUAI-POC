@@ -1,0 +1,71 @@
+name: TestMu AI + Xray
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      project_key:
+        description: "TestMU/Xray project key"
+        required: false
+        default: "PTPOC"
+      test_plan_key:
+        description: "Key del Test Plan Xray (opcional)"
+        required: false
+      test_exec_key:
+        description: "Key de un Test Execution existente (opcional)"
+        required: false
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      XRAY_CLIENT_ID: ${{ secrets.XRAY_CLIENT_ID }}
+      XRAY_CLIENT_SECRET: ${{ secrets.XRAY_CLIENT_SECRET }}
+      LT_USERNAME: ${{ secrets.LT_USERNAME }}
+      LT_ACCESS_KEY: ${{ secrets.LT_ACCESS_KEY }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
+
+      - name: Run Cucumber tests on TestMu AI Cloud
+        id: cucumber
+        continue-on-error: true
+        env:
+          HEADLESS: "true"
+        run: mvn -B test -Dheadless=true
+
+      - name: Upload Cucumber reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cucumber-reports
+          path: |
+            target/cucumber-reports/
+          if-no-files-found: warn
+
+      - name: Import results to Xray
+        if: ${{ always() && env.XRAY_CLIENT_ID != '' }}
+        uses: mikepenz/xray-action@v4
+        with:
+          username: ${{ env.XRAY_CLIENT_ID }}
+          password: ${{ env.XRAY_CLIENT_SECRET }}
+          xrayCloud: true
+          testFormat: cucumber
+          testPaths: target/cucumber-reports/cucumber.json
+          projectKey: ${{ github.event.inputs.project_key || vars.XRAY_PROJECT_KEY || 'PTPOC' }}
+          testPlanKey: ${{ github.event.inputs.test_plan_key || vars.XRAY_TEST_PLAN_KEY }}
+          testExecKey: ${{ github.event.inputs.test_exec_key || vars.XRAY_TEST_EXEC_KEY }}
+
+      - name: Fail job if tests failed
+        if: steps.cucumber.outcome == 'failure'
+        run: exit 1
