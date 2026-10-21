@@ -33,13 +33,10 @@ El reporte HTML queda en `target/cucumber-reports/cucumber.html` y el JSON que c
 
 Xray mapea cada escenario por el tag `@TEST_<ISSUE-KEY>`.
 
-Flujo recomendado la primera vez:
-
-1. En Jira: **Xray → Import Tests → Cucumber** y sube `src/test/resources/features/login.feature`.
-2. Xray crea los issues Test/Requirement en **PTPOC** y te da keys reales (`PTPOC-12`, `PTPOC-13`, …).
-3. Sustituye en el feature `@REQ_PTPOC-100`, `@TEST_PTPOC-101` y `@TEST_PTPOC-102` por esas keys.
-
-Si los Tests ya existen, pon directamente `@TEST_PTPOC-xx` en cada escenario.
+| Escenario | Tag Xray |
+|-----------|----------|
+| Credenciales inválidas | `@TEST_PTPOC-9` ([PTPOC-9](https://poctestmui.atlassian.net/browse/PTPOC-9)) |
+| Login exitoso (Scenario Outline) | `@TEST_PTPOC-101` — **pendiente**: falta la key real del Test en Jira |
 
 ## GitHub Actions
 
