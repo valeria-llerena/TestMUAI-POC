@@ -8,7 +8,7 @@ Feature: Login en SauceDemo
   Para acceder al inventario de productos
 
   # TODO: reemplazar PTPOC-101 por la key real del Test de login exitoso en Jira
-  @TEST_PTPOC-101 @smoke @positive
+  @TEST_PTPOC-8 @smoke @positive
   Scenario Outline: Iniciar sesión exitosamente con diferentes tipos de usuario
     Given que el usuario se encuentra en la página de login de SauceDemo
     When ingresa el usuario "<username>" y la contraseña "secret_sauce"
