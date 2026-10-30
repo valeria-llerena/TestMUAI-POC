@@ -38,8 +38,9 @@ public final class DriverFactory {
                 ltOptions.put("project", "SauceDemo BDD Project");
                 ltOptions.put("w3c", true);
                 ltOptions.put("plugin", "java-java");
-                
+                ltOptions.put("smartHeal", true);
                 browserOptions.setCapability("LT:Options", ltOptions);
+                
 
                 String hubURL = "https://" + ltUsername + ":" + ltAccessKey + "@hub.lambdatest.com/wd/hub";
                 DRIVER.set(new RemoteWebDriver(new URL(hubURL), browserOptions));
